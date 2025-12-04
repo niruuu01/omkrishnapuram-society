@@ -19,7 +19,7 @@ const RedevelopmentProject = () => {
 
     const fetchDocuments = useCallback(async () => {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/documents`);
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/documents`, { withCredentials: true });
             const docs = response.data.documents || response.data || [];
             setDocuments(Array.isArray(docs) ? docs : []);
             setLoading(false);
