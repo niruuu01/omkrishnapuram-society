@@ -39,6 +39,8 @@ const login = async (req, res) => {
             httpOnly: true,
             secure: true,
             sameSite: 'none',
+            domain: '.onrender.com',
+            path: '/',
             maxAge: 24 * 60 * 60 * 1000
         });
 
@@ -59,7 +61,7 @@ const login = async (req, res) => {
 };
 
 const logout = (req, res) => {
-    res.clearCookie('authToken', { sameSite: 'none', secure: true });
+    res.clearCookie('authToken', { sameSite: 'none', secure: true, domain: '.onrender.com', path: '/' });
     res.json({ success: true, message: 'Logged out successfully' });
 };
 

@@ -7,6 +7,7 @@ const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+app.set('trust proxy', 1);
 
 const { initializeDatabase, queryOne, run } = require('./database/db');
 const bcrypt = require('bcrypt');
@@ -30,7 +31,7 @@ app.use(helmet({
 }));
 
 app.use(cors({
-    origin: 'https://omkrishnapuram-society-app.netlify.app',
+    origin: ['https://omkrishnapuram-society-app.netlify.app'],
     credentials: true
 }));
 
