@@ -51,12 +51,15 @@ const documentFilter = (req, file, cb) => {
     ];
 
     const ext = path.extname(file.originalname).toLowerCase().replace('.', '');
+    const isExtAllowed = allowedExt.includes(ext);
+    const isMimeAllowed = allowedMime.includes(file.mimetype);
 
-    if (allowedExt.includes(ext) || allowedMime.includes(file.mimetype)) {
-        cb(null, true);
-    } else {
+    if (!isExtAllowed) {
         cb(new Error('Only document files (PDF, DOC, XLS, PPT) are allowed'));
+        return;
     }
+
+    cb(null, true);
 };
 
 // File filter for photos
