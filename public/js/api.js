@@ -2,7 +2,7 @@
 
 class API {
     constructor() {
-        this.baseURL = '/api';
+        this.baseURL = `${import.meta.env.VITE_API_URL}/api`;
         this.csrfToken = null;
     }
 

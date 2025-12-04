@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { Trash2, Upload, LogOut, FileText } from 'lucide-react';
 
@@ -16,61 +16,67 @@ const AdminPanel = () => {
     const [description, setDescription] = useState('');
     const [file, setFile] = useState(null);
 
-    // Check session on mount
-    useEffect(() => {
-        verifySession();
+    
+
+    const fetchDocuments = useCallback(async () => {
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/documents`, { withCredentials: true });
+            const docs = response.data.documents || response.data;
+            setDocuments(Array.isArray(docs) ? docs : []);
+        } catch {
+            console.error('Error fetching documents');
+            setDocuments([]);
+        }
     }, []);
 
-    const verifySession = async () => {
+    // Check session on mount
+    const verifySession = useCallback(async () => {
         try {
-            await axios.get('/api/auth/verify', { withCredentials: true });
+            await axios.get(`${import.meta.env.VITE_API_URL}/api/auth/verify`, { withCredentials: true });
             setIsAuthenticated(true);
             fetchDocuments();
-        } catch (error) {
+        } catch {
             setIsAuthenticated(false);
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [fetchDocuments]);
+
+    useEffect(() => {
+        setTimeout(() => { verifySession(); }, 0);
+    }, [verifySession]);
+
+    
 
     useEffect(() => {
         if (isAuthenticated) {
-            fetchDocuments();
+            setTimeout(() => { fetchDocuments(); }, 0);
         }
-    }, [isAuthenticated]);
+    }, [isAuthenticated, fetchDocuments]);
 
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('/api/auth/login', { username, password }, { withCredentials: true });
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, { username, password }, { withCredentials: true });
             setUsername('');
             setPassword('');
             setIsAuthenticated(true);
-        } catch (error) {
+        } catch {
             alert('Invalid credentials');
         }
     };
 
     const handleLogout = async () => {
         try {
-            await axios.post('/api/auth/logout', {}, { withCredentials: true });
-        } catch (error) {
-            console.error('Logout error:', error);
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/logout`, {}, { withCredentials: true });
+        } catch (err) {
+            console.error('Logout error:', err);
         }
         setIsAuthenticated(false);
         setDocuments([]);
     };
 
-    const fetchDocuments = async () => {
-        try {
-            const response = await axios.get('/api/documents', { withCredentials: true });
-            const docs = response.data.documents || response.data;
-            setDocuments(Array.isArray(docs) ? docs : []);
-        } catch (error) {
-            console.error('Error fetching documents:', error);
-            setDocuments([]);
-        }
-    };
+    
 
     const handleUpload = async (e) => {
         e.preventDefault();
@@ -84,7 +90,7 @@ const AdminPanel = () => {
 
         setUploadLoading(true);
         try {
-            await axios.post('/api/documents', formData, {
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/documents`, formData, {
                 withCredentials: true
             });
             alert('Document uploaded successfully');
@@ -92,7 +98,7 @@ const AdminPanel = () => {
             setDescription('');
             setFile(null);
             fetchDocuments();
-        } catch (error) {
+        } catch {
             alert('Upload failed');
         } finally {
             setUploadLoading(false);
@@ -102,9 +108,9 @@ const AdminPanel = () => {
     const handleDelete = async (id) => {
         if (!window.confirm('Are you sure you want to delete this document?')) return;
         try {
-            await axios.delete(`/api/documents/${id}`, { withCredentials: true });
+            await axios.delete(`${import.meta.env.VITE_API_URL}/api/documents/${id}`, { withCredentials: true });
             fetchDocuments();
-        } catch (error) {
+        } catch {
             alert('Delete failed');
         }
     };

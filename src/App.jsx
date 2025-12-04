@@ -11,17 +11,10 @@ import './App.css';
 
 function App() {
   const { pathname } = useLocation();
-  const [isMemberLoggedIn, setIsMemberLoggedIn] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isMemberLoggedIn, setIsMemberLoggedIn] = useState(() => !!localStorage.getItem('memberToken'));
+  const isLoading = false;
 
-  // Check if member token exists on mount
-  useEffect(() => {
-    const memberToken = localStorage.getItem('memberToken');
-    if (memberToken) {
-      setIsMemberLoggedIn(true);
-    }
-    setIsLoading(false);
-  }, []);
+  // Initial state derived from localStorage to avoid setState in effect
 
   useEffect(() => {
     window.scrollTo(0, 0);

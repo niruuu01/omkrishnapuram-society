@@ -7,12 +7,12 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: process.env.BACKEND_URL || 'http://localhost:3000',
+        target: (import.meta.env?.VITE_API_URL) || 'http://localhost:3000',
         changeOrigin: true,
         secure: false,
       },
       '/uploads': {
-        target: process.env.BACKEND_URL || 'http://localhost:3000',
+        target: (import.meta.env?.VITE_API_URL) || 'http://localhost:3000',
         changeOrigin: true,
         secure: false,
       }

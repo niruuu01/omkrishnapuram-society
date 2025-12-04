@@ -3,14 +3,15 @@ import { FileText, Download, Eye } from 'lucide-react';
 
 const DocumentCard = ({ doc }) => {
     const handleView = () => {
-        // Use the file_path directly (Vite will proxy /uploads to backend)
-        window.open(doc.file_path, '_blank');
+        const apiUrl = import.meta.env.VITE_API_URL || '';
+        const url = doc.file_path.startsWith('http') ? doc.file_path : `${apiUrl}${doc.file_path}`;
+        window.open(url, '_blank');
     };
 
     const handleDownload = () => {
-        // Use the file_path directly (Vite will proxy /uploads to backend)
+        const apiUrl = import.meta.env.VITE_API_URL || '';
         const link = document.createElement('a');
-        link.href = doc.file_path;
+        link.href = doc.file_path.startsWith('http') ? doc.file_path : `${apiUrl}${doc.file_path}`;
         link.download = doc.file_name || 'document';
         document.body.appendChild(link);
         link.click();

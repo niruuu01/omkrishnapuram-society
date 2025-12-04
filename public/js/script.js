@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Document Download Tracking (Optional)
 // ===================================
 document.querySelectorAll('.doc-download').forEach(link => {
-    link.addEventListener('click', function(e) {
+    link.addEventListener('click', function() {
         const docName = this.parentElement.querySelector('h4').textContent;
         console.log('Document downloaded:', docName);
         
@@ -164,7 +164,7 @@ function showNotification(message) {
 // Add Loading State to Buttons
 // ===================================
 document.querySelectorAll('.btn').forEach(button => {
-    button.addEventListener('click', function(e) {
+    button.addEventListener('click', function() {
         if (this.getAttribute('href') && this.getAttribute('href').startsWith('#')) {
             return; // Skip for anchor links
         }

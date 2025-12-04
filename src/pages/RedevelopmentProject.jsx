@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import DocumentCard from '../components/DocumentCard';
 import { Search, Filter } from 'lucide-react';
@@ -17,23 +17,24 @@ const RedevelopmentProject = () => {
         approvals: 'approval'
     };
 
-    useEffect(() => {
-        fetchDocuments();
-    }, []);
-
-    const fetchDocuments = async () => {
+    const fetchDocuments = useCallback(async () => {
         try {
-            const response = await axios.get('/api/documents');
-            // Extract documents array from response
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/documents`);
             const docs = response.data.documents || response.data || [];
             setDocuments(Array.isArray(docs) ? docs : []);
             setLoading(false);
-        } catch (error) {
-            console.error('Error fetching documents:', error);
-            setDocuments([]); // Set empty array on error
+        } catch {
+            console.error('Error fetching documents');
+            setDocuments([]);
             setLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        setTimeout(() => { fetchDocuments(); }, 0);
+    }, [fetchDocuments]);
+
+    
 
     const filteredDocs = Array.isArray(documents) ? documents.filter(doc => {
         const displayCategory = categoryMap[doc.category] || doc.category;
