@@ -39,11 +39,20 @@ const photoStorage = multer.diskStorage({
 
 // File filter for documents
 const documentFilter = (req, file, cb) => {
-    const allowedTypes = /pdf|doc|docx|xls|xlsx|ppt|pptx/;
-    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = allowedTypes.test(file.mimetype);
+    const allowedExt = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'];
+    const allowedMime = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.ms-powerpoint',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+    ];
 
-    if (extname && mimetype) {
+    const ext = path.extname(file.originalname).toLowerCase().replace('.', '');
+
+    if (allowedExt.includes(ext) || allowedMime.includes(file.mimetype)) {
         cb(null, true);
     } else {
         cb(new Error('Only document files (PDF, DOC, XLS, PPT) are allowed'));
