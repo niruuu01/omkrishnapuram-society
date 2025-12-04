@@ -8,6 +8,22 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const { initializeDatabase, queryOne, run } = require('./database/db');
+const bcrypt = require('bcrypt');
+initializeDatabase();
+(async () => {
+    try {
+        const admin = await queryOne('SELECT * FROM users WHERE username = ?', ['admin']);
+        if (!admin) {
+            const hashed = await bcrypt.hash('admin123', 10);
+            await run('INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)', ['admin', hashed, 'admin']);
+            console.log('🔥 Admin user automatically created on Render.');
+        }
+    } catch (err) {
+        console.error('Admin auto-create error:', err);
+    }
+})();
+
 // Middleware
 app.use(helmet({
     contentSecurityPolicy: false // Disable for development, configure properly in production
