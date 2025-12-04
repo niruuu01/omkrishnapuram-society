@@ -73,7 +73,7 @@ app.listen(PORT, () => {
     console.log(`
 ╔════════════════════════════════════════════════════════╗
 ║   Omkrishnapuram Society Management System             ║
-║   Server running on http://localhost:${PORT}            ║
+║   Server running on port ${PORT}                        ║
 ╚════════════════════════════════════════════════════════╝
 
 📝 API Endpoints:
