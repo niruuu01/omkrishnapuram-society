@@ -49,16 +49,15 @@ const documentFilter = (req, file, cb) => {
         'application/vnd.ms-powerpoint',
         'application/vnd.openxmlformats-officedocument.presentationml.presentation'
     ];
-
-    const ext = path.extname(file.originalname).toLowerCase().replace('.', '');
+    const ext = path.extname(file.originalname || '').toLowerCase().replace('.', '');
+    const mime = (file.mimetype || '').toLowerCase();
     const isExtAllowed = allowedExt.includes(ext);
-    const isMimeAllowed = allowedMime.includes(file.mimetype);
-
+    const isMimeAllowed = allowedMime.includes(mime) || mime === 'application/octet-stream';
+    console.log('Document upload:', { originalname: file.originalname, mimetype: file.mimetype });
     if (!isExtAllowed) {
         cb(new Error('Only document files (PDF, DOC, XLS, PPT) are allowed'));
         return;
     }
-
     cb(null, true);
 };
 
