@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Admin Login - Omkrishnapuram Co-op Housing Society Ltd.">
+    <title>Admin Login | Omkrishnapuram Co-op Housing Society Ltd.</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo">
+                    <h1>Omkrishnapuram</h1>
+                    <p>Co-op Housing Society Ltd.</p>
+                </div>
+                <div class="nav-toggle" id="navToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="redevelopment.html">Redevelopment Project</a></li>
+                    <li><a href="committee.html">Committee</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Admin Login Section -->
+    <section class="admin-login-section">
+        <div class="login-container">
+            <div class="login-card">
+                <div class="login-header">
+                    <div class="admin-icon">🔐</div>
+                    <h1>Admin Login</h1>
+                    <p>Access the administrative dashboard</p>
+                </div>
+
+                <form id="loginForm" class="login-form">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">👤</span>
+                            <input type="text" id="username" name="username" placeholder="Enter your username" required
+                                autocomplete="username">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">🔒</span>
+                            <input type="password" id="password" name="password" placeholder="Enter your password"
+                                required autocomplete="current-password">
+                            <button type="button" class="toggle-password" id="togglePassword">
+                                <span id="eyeIcon">👁️</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="rememberMe">
+                            <span>Remember me</span>
+                        </label>
+                        <a href="#" class="forgot-password">Forgot password?</a>
+                    </div>
+
+                    <div id="errorMessage" class="error-message" style="display: none;"></div>
+
+                    <button type="submit" class="btn btn-primary btn-login">
+                        <span id="loginText">Login</span>
+                        <span id="loginLoader" class="loader" style="display: none;"></span>
+                    </button>
+                </form>
+
+                <div class="login-footer">
+                    <p>🔒 Secure login for authorized personnel only</p>
+                </div>
+            </div>
+
+            <div class="login-info">
+                <h2>Welcome to Admin Portal</h2>
+                <div class="info-list">
+                    <div class="info-item">
+                        <span class="info-icon">📊</span>
+                        <div>
+                            <h3>Manage Content</h3>
+                            <p>Update society information and announcements</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">👥</span>
+                        <div>
+                            <h3>Committee Management</h3>
+                            <p>Update committee member details</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">📄</span>
+                        <div>
+                            <h3>Document Control</h3>
+                            <p>Upload and manage important documents</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="js/script.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/admin-auth.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Admin Dashboard - Omkrishnapuram Co-op Housing Society Ltd.">
+    <title>Admin Dashboard | Omkrishnapuram Co-op Housing Society Ltd.</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- Admin Navigation -->
+    <nav class="navbar admin-navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo">
+                    <h1>Admin Dashboard</h1>
+                    <p>Omkrishnapuram Society</p>
+                </div>
+                <div class="admin-user-info">
+                    <span class="admin-welcome">Welcome, <strong id="adminUsername">Admin</strong></span>
+                    <button class="btn-logout" id="logoutBtn">🚪 Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Content -->
+    <section class="admin-dashboard-section">
+        <div class="container">
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">Dashboard Overview</h1>
+                <p class="dashboard-subtitle">Manage your society's website content</p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-info">
+                        <h3>Committee Members</h3>
+                        <p class="stat-number">5</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📄</div>
+                    <div class="stat-info">
+                        <h3>Documents</h3>
+                        <p class="stat-number">12</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📰</div>
+                    <div class="stat-info">
+                        <h3>Announcements</h3>
+                        <p class="stat-number">3</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👁️</div>
+                    <div class="stat-info">
+                        <h3>Page Views</h3>
+                        <p class="stat-number">1,234</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="section-header">
+                <h2 class="section-title">Quick Actions</h2>
+                <div class="title-underline"></div>
+            </div>
+
+            <div class="actions-grid">
+                <div class="action-card">
+                    <div class="action-icon">✏️</div>
+                    <h3>Update Content</h3>
+                    <p>Edit homepage and about section content</p>
+                    <button class="btn btn-primary btn-action">Edit Content</button>
+                </div>
+
+                <div class="action-card">
+                    <div class="action-icon">👥</div>
+                    <h3>Manage Committee</h3>
+                    <p>Add, edit, or remove committee members</p>
+                    <button class="btn btn-primary btn-action">Manage Members</button>
+                </div>
+
+                <div class="action-card">
+                    <div class="action-icon">📁</div>
+                    <h3>Upload Documents</h3>
+                    <p>Add new documents and files</p>
+                    <button class="btn btn-primary btn-action">Upload Files</button>
+                </div>
+
+                <div class="action-card">
+                    <div class="action-icon">📢</div>
+                    <h3>Post Announcement</h3>
+                    <p>Create new announcements for residents</p>
+                    <button class="btn btn-primary btn-action">New Announcement</button>
+                </div>
+
+                <div class="action-card">
+                    <div class="action-icon">🏗️</div>
+                    <h3>Redevelopment Updates</h3>
+                    <p>Update project timeline and details</p>
+                    <button class="btn btn-primary btn-action">Update Project</button>
+                </div>
+
+                <div class="action-card">
+                    <div class="action-icon">⚙️</div>
+                    <h3>Settings</h3>
+                    <p>Configure website settings and preferences</p>
+                    <button class="btn btn-primary btn-action">Open Settings</button>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="section-header">
+                <h2 class="section-title">Recent Activity</h2>
+                <div class="title-underline"></div>
+            </div>
+
+            <div class="activity-list">
+                <div class="activity-item">
+                    <div class="activity-icon">✅</div>
+                    <div class="activity-content">
+                        <h4>Committee members updated</h4>
+                        <p>5 members information updated successfully</p>
+                        <span class="activity-time">2 hours ago</span>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon">📄</div>
+                    <div class="activity-content">
+                        <h4>New document uploaded</h4>
+                        <p>Redevelopment plan PDF added to documents</p>
+                        <span class="activity-time">1 day ago</span>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon">🔄</div>
+                    <div class="activity-content">
+                        <h4>Homepage content updated</h4>
+                        <p>Vision and mission section modified</p>
+                        <span class="activity-time">3 days ago</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer admin-footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2025 Omkrishnapuram Co-op Housing Society Ltd. Admin Panel</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="admin-auth.js"></script>
+    <script>
+        // Check if user is logged in
+        if (!sessionStorage.getItem('adminLoggedIn')) {
+            window.location.href = 'admin-login.html';
+        }
+
+< !DOCTYPE html >
+            <html lang="en">
+
+                <head>
+                    <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                            <meta name="description" content="Admin Dashboard - Omkrishnapuram Co-op Housing Society Ltd.">
+                                <title>Admin Dashboard | Omkrishnapuram Co-op Housing Society Ltd.</title>
+                                <link rel="stylesheet" href="styles.css">
+                                    <link rel="preconnect" href="https://fonts.googleapis.com">
+                                        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                                            <link
+                                                href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap"
+                                                rel="stylesheet">
+                                            </head>
+
+                                            <body>
+    <!-- Admin Navigation -->
+                                                <nav class="navbar admin-navbar">
+                                                    <div class="container">
+                                                        <div class="nav-wrapper">
+                                                            <div class="logo">
+                                                                <h1>Admin Dashboard</h1>
+                                                                <p>Omkrishnapuram Society</p>
+                                                            </div>
+                                                            <div class="admin-user-info">
+                                                                <span class="admin-welcome">Welcome, <strong id="adminUsername">Admin</strong></span>
+                                                                <button class="btn-logout" id="logoutBtn">🚪 Logout</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </nav>
+
+                                                <!-- Dashboard Content -->
+                                                <section class="admin-dashboard-section">
+                                                    <div class="container">
+                                                        <div class="dashboard-header">
+                                                            <h1 class="dashboard-title">Dashboard Overview</h1>
+                                                            <p class="dashboard-subtitle">Manage your society's website content</p>
+                                                        </div>
+
+                                                        <!-- Stats Cards -->
+                                                        <div class="stats-grid">
+                                                            <div class="stat-card">
+                                                                <div class="stat-icon">👥</div>
+                                                                <div class="stat-info">
+                                                                    <h3>Committee Members</h3>
+                                                                    <p class="stat-number">5</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="stat-card">
+                                                                <div class="stat-icon">📄</div>
+                                                                <div class="stat-info">
+                                                                    <h3>Documents</h3>
+                                                                    <p class="stat-number">12</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="stat-card">
+                                                                <div class="stat-icon">📰</div>
+                                                                <div class="stat-info">
+                                                                    <h3>Announcements</h3>
+                                                                    <p class="stat-number">3</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="stat-card">
+                                                                <div class="stat-icon">👁️</div>
+                                                                <div class="stat-info">
+                                                                    <h3>Page Views</h3>
+                                                                    <p class="stat-number">1,234</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Quick Actions -->
+                                                        <div class="section-header">
+                                                            <h2 class="section-title">Quick Actions</h2>
+                                                            <div class="title-underline"></div>
+                                                        </div>
+
+                                                        <div class="actions-grid">
+                                                            <div class="action-card">
+                                                                <div class="action-icon">✏️</div>
+                                                                <h3>Update Content</h3>
+                                                                <p>Edit homepage and about section content</p>
+                                                                <button class="btn btn-primary btn-action">Edit Content</button>
+                                                            </div>
+
+                                                            <div class="action-card">
+                                                                <div class="action-icon">👥</div>
+                                                                <h3>Manage Committee</h3>
+                                                                <p>Add, edit, or remove committee members</p>
+                                                                <button class="btn btn-primary btn-action">Manage Members</button>
+                                                            </div>
+
+                                                            <div class="action-card">
+                                                                <div class="action-icon">📁</div>
+                                                                <h3>Upload Documents</h3>
+                                                                <p>Add new documents and files</p>
+                                                                <button class="btn btn-primary btn-action">Upload Files</button>
+                                                            </div>
+
+                                                            <div class="action-card">
+                                                                <div class="action-icon">📢</div>
+                                                                <h3>Post Announcement</h3>
+                                                                <p>Create new announcements for residents</p>
+                                                                <button class="btn btn-primary btn-action">New Announcement</button>
+                                                            </div>
+
+                                                            <div class="action-card">
+                                                                <div class="action-icon">🏗️</div>
+                                                                <h3>Redevelopment Updates</h3>
+                                                                <p>Update project timeline and details</p>
+                                                                <button class="btn btn-primary btn-action">Update Project</button>
+                                                            </div>
+
+                                                            <div class="action-card">
+                                                                <div class="action-icon">⚙️</div>
+                                                                <h3>Settings</h3>
+                                                                <p>Configure website settings and preferences</p>
+                                                                <button class="btn btn-primary btn-action">Open Settings</button>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Recent Activity -->
+                                                        <div class="section-header">
+                                                            <h2 class="section-title">Recent Activity</h2>
+                                                            <div class="title-underline"></div>
+                                                        </div>
+
+                                                        <div class="activity-list">
+                                                            <div class="activity-item">
+                                                                <div class="activity-icon">✅</div>
+                                                                <div class="activity-content">
+                                                                    <h4>Committee members updated</h4>
+                                                                    <p>5 members information updated successfully</p>
+                                                                    <span class="activity-time">2 hours ago</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="activity-item">
+                                                                <div class="activity-icon">📄</div>
+                                                                <div class="activity-content">
+                                                                    <h4>New document uploaded</h4>
+                                                                    <p>Redevelopment plan PDF added to documents</p>
+                                                                    <span class="activity-time">1 day ago</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="activity-item">
+                                                                <div class="activity-icon">🔄</div>
+                                                                <div class="activity-content">
+                                                                    <h4>Homepage content updated</h4>
+                                                                    <p>Vision and mission section modified</p>
+                                                                    <span class="activity-time">3 days ago</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </section>
+
+                                                <!-- Footer -->
+                                                <footer class="footer admin-footer">
+                                                    <div class="container">
+                                                        <div class="footer-bottom">
+                                                            <p>&copy; 2025 Omkrishnapuram Co-op Housing Society Ltd. Admin Panel</p>
+                                                        </div>
+                                                    </div>
+                                                </footer>
+
+                                                <script src="script.js"></script>
+    <script src="admin-auth.js"></script>
+    <script>
+        // Check if user is logged in
+                                            if (!sessionStorage.getItem('adminLoggedIn')) {
+                                                window.location.href = 'admin-login.html';
+        }
+
+                                            // Display username
+                                            const username = sessionStorage.getItem('adminUsername');
+                                            if (username) {
+                                                document.getElementById('adminUsername').textContent = username;
+        }
+
+                                            // Logout functionality
+                                            document.getElementById('logoutBtn').addEventListener('click', async function () {
+            if (confirm('Are you sure you want to logout?')) {
+                                                await logout();
+            }
+        });
+
+                                            // Action buttons - Link to actual pages
+                                            const actionButtons = document.querySelectorAll('.btn-action');
+        actionButtons[0].addEventListener('click', () => window.location.href = 'admin-content.html');
+        actionButtons[1].addEventListener('click', () => window.location.href = 'admin-committee.html');
+        actionButtons[2].addEventListener('click', () => window.location.href = 'admin-documents.html');
+        actionButtons[3].addEventListener('click', () => alert('Announcements feature coming soon!'));
+        actionButtons[4].addEventListener('click', () => alert('Redevelopment updates coming soon!'));
+        actionButtons[5].addEventListener('click', () => alert('Settings coming soon!'));
+    </script>
+</body>
+
+</html>

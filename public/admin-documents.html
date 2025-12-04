@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Management | Admin Panel</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body class="admin-body">
+    <!-- Admin Header -->
+    <header class="admin-header">
+        <div class="admin-header-content">
+            <h1>📄 Document Management</h1>
+            <div class="admin-header-actions">
+                <span class="admin-user">👤 <span id="adminUsername">Admin</span></span>
+                <button onclick="logout()" class="btn btn-secondary">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+        <div class="admin-container">
+            <!-- Back to Dashboard -->
+            <div class="admin-breadcrumb">
+                <a href="admin-dashboard.html">← Back to Dashboard</a>
+            </div>
+
+            <!-- Success/Error Messages -->
+            <div id="messageContainer"></div>
+
+            <!-- Upload Document Section -->
+            <section class="admin-section">
+                <h2>Upload New Document</h2>
+                <form id="uploadForm" class="admin-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="docTitle">Document Title *</label>
+                            <input type="text" id="docTitle" required placeholder="e.g., General Body Meeting Notice">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="docCategory">Category *</label>
+                            <select id="docCategory" required>
+                                <option value="">Select category</option>
+                                <option value="notices">Notices & Circulars</option>
+                                <option value="reports">Presentations & Reports</option>
+                                <option value="drawings">Drawings & Plans</option>
+                                <option value="approvals">Approvals & Permissions</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="docDescription">Description</label>
+                        <textarea id="docDescription" rows="2"
+                            placeholder="Brief description of the document..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="docFile">Select File *</label>
+                        <input type="file" id="docFile" required accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+                        <small>Max size: 10MB. Formats: PDF, DOC, XLS, PPT</small>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <span id="uploadText">📤 Upload Document</span>
+                        <span id="uploadLoader" class="loader" style="display: none;"></span>
+                    </button>
+                </form>
+            </section>
+
+            <!-- Filter Documents -->
+            <section class="admin-section">
+                <div class="filter-bar">
+                    <label>Filter by Category:</label>
+                    <select id="filterCategory" onchange="loadDocuments()">
+                        <option value="">All Categories</option>
+                        <option value="notices">Notices & Circulars</option>
+                        <option value="reports">Presentations & Reports</option>
+                        <option value="drawings">Drawings & Plans</option>
+                        <option value="approvals">Approvals & Permissions</option>
+                    </select>
+                </div>
+            </section>
+
+            <!-- Documents List -->
+            <section class="admin-section">
+                <h2>Uploaded Documents</h2>
+                <div id="documentsList" class="documents-list"></div>
+            </section>
+        </div>
+    </main>
+
+    <script src="js/api.js"></script>
+    <script src="js/admin-auth.js"></script>
+    <script>
+        // Protect admin page
+        protectAdminPage();
+
+        // Load username
+        document.getElementById('adminUsername').textContent = sessionStorage.getItem('adminUsername') || 'Admin';
+
+        // Category icons
+        const categoryIcons = {
+            notices: '📋',
+            reports: '📊',
+            drawings: '📐',
+            approvals: '✅'
+        };
+
+        // Category names
+        const categoryNames = {
+            notices: 'Notices & Circulars',
+            reports: 'Presentations & Reports',
+            drawings: 'Drawings & Plans',
+            approvals: 'Approvals & Permissions'
+        };
+
+        // Load documents
+        async function loadDocuments() {
+            const category = document.getElementById('filterCategory').value;
+
+            try {
+                const response = await api.getDocuments(category || null);
+                const documents = response.documents;
+
+                displayDocuments(documents);
+            } catch (error) {
+                showMessage('Error loading documents: ' + error.message, 'error');
+            }
+        }
+
+        // Display documents
+        function displayDocuments(documents) {
+            const container = document.getElementById('documentsList');
+
+            if (!documents || documents.length === 0) {
+                container.innerHTML = '<p class="no-data">No documents found</p>';
+                return;
+            }
+
+            container.innerHTML = documents.map(doc => `
+                <div class="document-item-admin">
+                    <div class="doc-icon-large">${categoryIcons[doc.category] || '📄'}</div>
+                    <div class="doc-details">
+                        <h4>${doc.title}</h4>
+                        <p class="doc-meta">
+                            <span class="doc-category">${categoryNames[doc.category]}</span>
+                            <span>•</span>
+                            <span>${formatDate(doc.uploaded_at)}</span>
+                            <span>•</span>
+                            <span>${formatFileSize(doc.file_size)}</span>
+                        </p>
+                        ${doc.description ? `<p class="doc-description">${doc.description}</p>` : ''}
+                    </div>
+                    <div class="doc-actions">
+                        <a href="${api.getDocumentDownloadURL(doc.id)}" class="btn btn-secondary btn-sm" download>
+                            ⬇ Download
+                        </a>
+                        <button onclick="deleteDocument(${doc.id}, '${doc.title}')" class="btn btn-danger btn-sm">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Upload document
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const uploadBtn = document.getElementById('uploadText');
+            const loader = document.getElementById('uploadLoader');
+
+            uploadBtn.style.display = 'none';
+            loader.style.display = 'inline-block';
+
+            try {
+                const file = document.getElementById('docFile').files[0];
+                const title = document.getElementById('docTitle').value;
+                const description = document.getElementById('docDescription').value;
+                const category = document.getElementById('docCategory').value;
+
+                if (!file) {
+                    throw new Error('Please select a file');
+                }
+
+                await api.uploadDocument(file, title, description, category);
+
+                showMessage('Document uploaded successfully!', 'success');
+                document.getElementById('uploadForm').reset();
+                loadDocuments();
+            } catch (error) {
+                showMessage('Error: ' + error.message, 'error');
+            } finally {
+                uploadBtn.style.display = 'inline';
+                loader.style.display = 'none';
+            }
+        });
+
+        // Delete document
+        async function deleteDocument(id, title) {
+            if (!confirm(`Are you sure you want to delete "${title}"?`)) {
+                return;
+            }
+
+            try {
+                await api.deleteDocument(id);
+                showMessage('Document deleted successfully!', 'success');
+                loadDocuments();
+            } catch (error) {
+                showMessage('Error deleting document: ' + error.message, 'error');
+            }
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-IN', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        // Show message helper
+        function showMessage(message, type) {
+            const container = document.getElementById('messageContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `admin-message admin-message-${type}`;
+            messageDiv.textContent = message;
+
+            container.innerHTML = '';
+            container.appendChild(messageDiv);
+
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 5000);
+        }
+
+        // Load documents on page load
+        loadDocuments();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Committee Management | Admin Panel</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body class="admin-body">
+    <!-- Admin Header -->
+    <header class="admin-header">
+        <div class="admin-header-content">
+            <h1>👥 Committee Management</h1>
+            <div class="admin-header-actions">
+                <span class="admin-user">👤 <span id="adminUsername">Admin</span></span>
+                <button onclick="logout()" class="btn btn-secondary">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+        <div class="admin-container">
+            <!-- Back to Dashboard -->
+            <div class="admin-breadcrumb">
+                <a href="admin-dashboard.html">← Back to Dashboard</a>
+            </div>
+
+            <!-- Success/Error Messages -->
+            <div id="messageContainer"></div>
+
+            <!-- Add Member Button -->
+            <div class="admin-section-header">
+                <h2>Committee Members</h2>
+                <button onclick="showAddMemberForm()" class="btn btn-primary">+ Add Member</button>
+            </div>
+
+            <!-- Add/Edit Member Form (Hidden by default) -->
+            <div id="memberFormSection" class="admin-section" style="display: none;">
+                <h3 id="formTitle">Add New Member</h3>
+                <form id="memberForm" class="admin-form">
+                    <input type="hidden" id="memberId">
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="memberName">Name *</label>
+                            <input type="text" id="memberName" required placeholder="Enter full name">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="memberPosition">Position *</label>
+                            <input type="text" id="memberPosition" required placeholder="e.g., Chairperson">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="memberEmail">Email</label>
+                            <input type="email" id="memberEmail" placeholder="email@example.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="memberPhone">Phone</label>
+                            <input type="tel" id="memberPhone" placeholder="+91 XXXXXXXXXX">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="memberCategory">Category *</label>
+                            <select id="memberCategory" required>
+                                <option value="">Select category</option>
+                                <option value="executive">Executive Committee</option>
+                                <option value="managing">Managing Committee</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="memberBadge">Badge</label>
+                            <input type="text" id="memberBadge" placeholder="e.g., Leadership">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="memberInitials">Initials</label>
+                        <input type="text" id="memberInitials" placeholder="e.g., RS" maxlength="3">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="memberBio">Bio</label>
+                        <textarea id="memberBio" rows="3"
+                            placeholder="Brief description of member's role..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="memberPhoto">Photo</label>
+                        <input type="file" id="memberPhoto" accept="image/*">
+                        <small>Max size: 5MB. Formats: JPG, PNG, GIF</small>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <span id="saveMemberText">Save Member</span>
+                            <span id="saveMemberLoader" class="loader" style="display: none;"></span>
+                        </button>
+                        <button type="button" onclick="cancelMemberForm()" class="btn btn-secondary">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Members List -->
+            <section class="admin-section">
+                <h3>Executive Committee</h3>
+                <div id="executiveList" class="members-grid"></div>
+            </section>
+
+            <section class="admin-section">
+                <h3>Managing Committee</h3>
+                <div id="managingList" class="members-grid"></div>
+            </section>
+        </div>
+    </main>
+
+    <script src="js/api.js"></script>
+    <script src="js/admin-auth.js"></script>
+    <script>
+        // Protect admin page
+        protectAdminPage();
+
+        // Load username
+        document.getElementById('adminUsername').textContent = sessionStorage.getItem('adminUsername') || 'Admin';
+
+        let editingMemberId = null;
+
+        // Load all members
+        async function loadMembers() {
+            try {
+                const response = await api.getCommitteeMembers();
+                const members = response.members;
+
+                // Display executive members
+                displayMembers(members.executive, 'executiveList');
+
+                // Display managing members
+                displayMembers(members.managing, 'managingList');
+            } catch (error) {
+                showMessage('Error loading members: ' + error.message, 'error');
+            }
+        }
+
+        // Display members in grid
+        function displayMembers(members, containerId) {
+            const container = document.getElementById(containerId);
+
+            if (!members || members.length === 0) {
+                container.innerHTML = '<p class="no-data">No members found</p>';
+                return;
+            }
+
+            container.innerHTML = members.map(member => `
+                <div class="member-card-admin">
+                    <div class="member-card-header">
+                        <div class="member-initials">${member.initials || member.name.substring(0, 2)}</div>
+                        <div class="member-card-actions">
+                            <button onclick="editMember(${member.id})" class="btn-icon" title="Edit">✏️</button>
+                            <button onclick="deleteMember(${member.id}, '${member.name}')" class="btn-icon" title="Delete">🗑️</button>
+                        </div>
+                    </div>
+                    <h4>${member.name}</h4>
+                    <p class="member-position">${member.position}</p>
+                    ${member.email ? `<p class="member-contact">📧 ${member.email}</p>` : ''}
+                    ${member.badge ? `<span class="member-badge">${member.badge}</span>` : ''}
+                </div>
+            `).join('');
+        }
+
+        // Show add member form
+        function showAddMemberForm() {
+            editingMemberId = null;
+            document.getElementById('formTitle').textContent = 'Add New Member';
+            document.getElementById('memberForm').reset();
+            document.getElementById('memberId').value = '';
+            document.getElementById('memberFormSection').style.display = 'block';
+            document.getElementById('memberFormSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Edit member
+        async function editMember(id) {
+            try {
+                const response = await api.getMemberById(id);
+                const member = response.member;
+
+                editingMemberId = id;
+                document.getElementById('formTitle').textContent = 'Edit Member';
+                document.getElementById('memberId').value = id;
+                document.getElementById('memberName').value = member.name;
+                document.getElementById('memberPosition').value = member.position;
+                document.getElementById('memberEmail').value = member.email || '';
+                document.getElementById('memberPhone').value = member.phone || '';
+                document.getElementById('memberCategory').value = member.category;
+                document.getElementById('memberBadge').value = member.badge || '';
+                document.getElementById('memberInitials').value = member.initials || '';
+                document.getElementById('memberBio').value = member.bio || '';
+
+                document.getElementById('memberFormSection').style.display = 'block';
+                document.getElementById('memberFormSection').scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                showMessage('Error loading member: ' + error.message, 'error');
+            }
+        }
+
+        // Delete member
+        async function deleteMember(id, name) {
+            if (!confirm(`Are you sure you want to delete ${name}?`)) {
+                return;
+            }
+
+            try {
+                await api.deleteMember(id);
+                showMessage('Member deleted successfully!', 'success');
+                loadMembers();
+            } catch (error) {
+                showMessage('Error deleting member: ' + error.message, 'error');
+            }
+        }
+
+        // Cancel form
+        function cancelMemberForm() {
+            document.getElementById('memberFormSection').style.display = 'none';
+            document.getElementById('memberForm').reset();
+            editingMemberId = null;
+        }
+
+        // Save member
+        document.getElementById('memberForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const saveBtn = document.getElementById('saveMemberText');
+            const loader = document.getElementById('saveMemberLoader');
+
+            saveBtn.style.display = 'none';
+            loader.style.display = 'inline-block';
+
+            try {
+                const memberData = {
+                    name: document.getElementById('memberName').value,
+                    position: document.getElementById('memberPosition').value,
+                    email: document.getElementById('memberEmail').value,
+                    phone: document.getElementById('memberPhone').value,
+                    category: document.getElementById('memberCategory').value,
+                    badge: document.getElementById('memberBadge').value,
+                    initials: document.getElementById('memberInitials').value,
+                    bio: document.getElementById('memberBio').value
+                };
+
+                // Handle photo upload
+                const photoInput = document.getElementById('memberPhoto');
+                if (photoInput.files.length > 0) {
+                    memberData.photo = photoInput.files[0];
+                }
+
+                if (editingMemberId) {
+                    await api.updateMember(editingMemberId, memberData);
+                    showMessage('Member updated successfully!', 'success');
+                } else {
+                    await api.createMember(memberData);
+                    showMessage('Member added successfully!', 'success');
+                }
+
+                cancelMemberForm();
+                loadMembers();
+            } catch (error) {
+                showMessage('Error: ' + error.message, 'error');
+            } finally {
+                saveBtn.style.display = 'inline';
+                loader.style.display = 'none';
+            }
+        });
+
+        // Show message helper
+        function showMessage(message, type) {
+            const container = document.getElementById('messageContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `admin-message admin-message-${type}`;
+            messageDiv.textContent = message;
+
+            container.innerHTML = '';
+            container.appendChild(messageDiv);
+
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 5000);
+        }
+
+        // Load members on page load
+        loadMembers();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Management | Admin Panel</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body class="admin-body">
+    <!-- Admin Header -->
+    <header class="admin-header">
+        <div class="admin-header-content">
+            <h1>📝 Content Management</h1>
+            <div class="admin-header-actions">
+                <span class="admin-user">👤 <span id="adminUsername">Admin</span></span>
+                <button onclick="logout()" class="btn btn-secondary">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+        <div class="admin-container">
+            <!-- Back to Dashboard -->
+            <div class="admin-breadcrumb">
+                <a href="admin-dashboard.html">← Back to Dashboard</a>
+            </div>
+
+            <!-- Success/Error Messages -->
+            <div id="messageContainer"></div>
+
+            <!-- Society Information Section -->
+            <section class="admin-section">
+                <h2>Society Information</h2>
+                <form id="societyInfoForm" class="admin-form">
+                    <div class="form-group">
+                        <label for="aboutSociety">About Society</label>
+                        <textarea id="aboutSociety" rows="4" placeholder="Enter society description..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vision">Our Vision</label>
+                        <textarea id="vision" rows="3" placeholder="Enter society vision..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="commitment">Our Commitment</label>
+                        <textarea id="commitment" rows="3" placeholder="Enter society commitment..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <span id="saveInfoText">Save Information</span>
+                        <span id="saveInfoLoader" class="loader" style="display: none;"></span>
+                    </button>
+                </form>
+            </section>
+
+            <!-- Contact Information Section -->
+            <section class="admin-section">
+                <h2>Contact Information</h2>
+                <form id="contactInfoForm" class="admin-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contactEmail">Email</label>
+                            <input type="email" id="contactEmail" placeholder="info@omkrishnapuram.org">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="contactPhone">Phone</label>
+                            <input type="tel" id="contactPhone" placeholder="+91 XXXX XXXXXX">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contactAddress">Address</label>
+                        <textarea id="contactAddress" rows="2" placeholder="Enter society address..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <span id="saveContactText">Save Contact Info</span>
+                        <span id="saveContactLoader" class="loader" style="display: none;"></span>
+                    </button>
+                </form>
+            </section>
+        </div>
+    </main>
+
+    <script src="js/api.js"></script>
+    <script src="js/admin-auth.js"></script>
+    <script>
+        // Protect admin page
+        protectAdminPage();
+
+        // Load username
+        document.getElementById('adminUsername').textContent = sessionStorage.getItem('adminUsername') || 'Admin';
+
+        // Load existing content
+        async function loadContent() {
+            try {
+                const response = await api.getContent();
+                const content = response.content;
+
+                // Populate form fields
+                if (content.about_society) {
+                    document.getElementById('aboutSociety').value = content.about_society.value;
+                }
+                if (content.vision) {
+                    document.getElementById('vision').value = content.vision.value;
+                }
+                if (content.commitment) {
+                    document.getElementById('commitment').value = content.commitment.value;
+                }
+                if (content.contact_email) {
+                    document.getElementById('contactEmail').value = content.contact_email.value;
+                }
+                if (content.contact_phone) {
+                    document.getElementById('contactPhone').value = content.contact_phone.value;
+                }
+                if (content.contact_address) {
+                    document.getElementById('contactAddress').value = content.contact_address.value;
+                }
+            } catch (error) {
+                showMessage('Error loading content: ' + error.message, 'error');
+            }
+        }
+
+        // Save society information
+        document.getElementById('societyInfoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const saveBtn = document.getElementById('saveInfoText');
+            const loader = document.getElementById('saveInfoLoader');
+
+            saveBtn.style.display = 'none';
+            loader.style.display = 'inline-block';
+
+            try {
+                await api.updateContent('about_society', document.getElementById('aboutSociety').value);
+                await api.updateContent('vision', document.getElementById('vision').value);
+                await api.updateContent('commitment', document.getElementById('commitment').value);
+
+                showMessage('Society information updated successfully!', 'success');
+            } catch (error) {
+                showMessage('Error: ' + error.message, 'error');
+            } finally {
+                saveBtn.style.display = 'inline';
+                loader.style.display = 'none';
+            }
+        });
+
+        // Save contact information
+        document.getElementById('contactInfoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const saveBtn = document.getElementById('saveContactText');
+            const loader = document.getElementById('saveContactLoader');
+
+            saveBtn.style.display = 'none';
+            loader.style.display = 'inline-block';
+
+            try {
+                await api.updateContent('contact_email', document.getElementById('contactEmail').value);
+                await api.updateContent('contact_phone', document.getElementById('contactPhone').value);
+                await api.updateContent('contact_address', document.getElementById('contactAddress').value);
+
+                showMessage('Contact information updated successfully!', 'success');
+            } catch (error) {
+                showMessage('Error: ' + error.message, 'error');
+            } finally {
+                saveBtn.style.display = 'inline';
+                loader.style.display = 'none';
+            }
+        });
+
+        // Show message helper
+        function showMessage(message, type) {
+            const container = document.getElementById('messageContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `admin-message admin-message-${type}`;
+            messageDiv.textContent = message;
+
+            container.innerHTML = '';
+            container.appendChild(messageDiv);
+
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 5000);
+        }
+
+        // Load content on page load
+        loadContent();
+    </script>
+</body>
+
+</html>
